@@ -1,50 +1,120 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
-import Linkdin from '../../public/linkdin.jpg'
-import Tel from '../../public/telegram.jpg'
+"use client";
+
+import React, { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
+import Link from "next/link";
+import { FaLinkedin, FaTelegramPlane } from "react-icons/fa";
 
 function Contact() {
+  const form = useRef();
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus("");
+
+    emailjs
+      .sendForm(
+        "service_x7of8ha",
+        "template_ni5t1lc",
+        form.current,
+        "IV6M0LXTQ6Ia21yRe"
+      )
+      .then(
+        () => {
+          setLoading(false);
+          setStatus("Message sent successfully!");
+          form.current.reset();
+        },
+        (error) => {
+          setLoading(false);
+          setStatus("Failed to send message.");
+          console.log(error);
+        }
+      );
+  };
+
   return (
-    <section id='contact' className='container mx-auto px-6 md:px-12 lg:px-24 py-24'>
-        <div className='grid md:grid-cols-2 gap-12 items-center '>
-            <div>
-                <h2 className='text-3xl md:text-4xl font-bold text-white mb-4 '>Let's Connect</h2>
-                <p className='text-[#abd7be] text-lg mb-6 leading-relaxed '>I'm always excited to connect, share ideas, and collaborate on innovative projects. Let's work together to creat something impactful and inspiring!</p>
-                  <div className='flex gap-4 '>
-                      <Link href="https://www.linkedin.com/in/sofoniyas-alemu/">
-                      <Image src={Linkdin} alt='linkdin' width={40} height={40} className='hover:scale-110 rounded-xl transition-transform duration-300 cursor-pointer'/>
-                      </Link>
-                       <Link href="https://t.me/Capit_sofis">
-                      <Image src={Tel} alt='telegram' width={45} height={100} className='hover:scale-110 rounded-xl transition-transform duration-300 cursor-pointer'/>
-                      </Link>
+    <section className="container mx-auto px-6 py-24">
+      <div className="grid md:grid-cols-2 gap-12">
 
-                  </div>
-            </div>
-          <div className='bg-[#1a1a1a] p-8 rounded-xl shadow-lg'>
-            <form action="" className='flex flex-col space-y-6'>
-                <div>
-                    <label htmlFor='email' className='block text-white font-medium mb-2'>Your Email</label>
-                    <input type="email" id='email' required placeholder='YourEmail@Email.com' autoComplete='off' className='w-full p-3 rounded-lg bg-[#1f1f1f] border border-[#33353f] text-white placeholder-[#9ca2a9] focus-ring-2 focus-ring[#00adbs] focus-outline-none transition-all duration-300' />
-                </div>
-                 <div>
-                    <label htmlFor='subject' className='block text-white font-medium mb-2'>Subject</label>
-                    <input type="text" id='subject' required placeholder='subject' autoComplete='off' className='w-full p-3 rounded-lg bg-[#1f1f1f] border border-[#33353f] text-white placeholder-[#9ca2a9] focus-ring-2 focus-ring[#00adbs] focus-outline-none transition-all duration-300' />
-                </div>
-                 <div>
-                    <label htmlFor='message' className='block text-white font-medium mb-2'>Massage</label>
-                    <textarea  id='message' required placeholder="Let's talk about .... " autoComplete='off' className='w-full h-32 resize-none p-3 rounded-lg bg-[#1f1f1f] border border-[#33353f] text-white placeholder-[#9ca2a9] focus-ring-2 focus-ring[#00adbs] focus-outline-none transition-all duration-300' />
-                </div>
-                <button type='submit' className='w-full bg-[#00adb5] hover:bg-[#008188] text-wite font-medium py-3 cursor-pointer rounded-lg transition-all duration-300'>Send Message</button>
+        {/* LEFT */}
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Let's Connect
+          </h2>
 
-            </form>
+          <div className="flex gap-4">
+            <Link href="https://www.linkedin.com/in/sofi-bim/" target="_blank">
+              <FaLinkedin className="w-10 h-10 text-blue-600" />
+            </Link>
 
+            <Link href="https://t.me/sofis_man/" target="_blank">
+              <FaTelegramPlane className="w-10 h-10 text-blue-400" />
+            </Link>
           </div>
-
         </div>
 
+        {/* FORM */}
+        <form
+          ref={form}
+          onSubmit={sendEmail}
+          className="bg-[#1a1a1a] p-8 rounded-xl space-y-6"
+        >
+
+          {/* EMAIL (IMPORTANT: name="email") */}
+          <div>
+            <label className="text-white">Your Email</label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full p-3 mt-2 bg-[#1f1f1f] text-white rounded-lg"
+            />
+          </div>
+
+          {/* SUBJECT (IMPORTANT: name="text") */}
+          <div>
+            <label className="text-white">Subject</label>
+            <input
+              type="text"
+              name="text"
+              required
+              className="w-full p-3 mt-2 bg-[#1f1f1f] text-white rounded-lg"
+            />
+          </div>
+
+          {/* MESSAGE */}
+          <div>
+            <label className="text-white">Message</label>
+            <textarea
+              name="message"
+              required
+              rows={5}
+              className="w-full p-3 mt-2 bg-[#1f1f1f] text-white rounded-lg"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#00adb5] hover:bg-[#008188] text-white py-3 rounded-lg"
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </button>
+
+          {status && (
+            <p className="text-center text-green-400 text-sm">
+              {status}
+            </p>
+          )}
+        </form>
+      </div>
     </section>
-  )
+  );
 }
 
-export default Contact
+export default Contact;
